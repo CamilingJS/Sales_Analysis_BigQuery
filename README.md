@@ -55,3 +55,16 @@ SELECT DISTINCT Product_Category,
 FROM prework.sales
 group by 1,2;
 ```
+
+#### 6: Which product category has the highest number of orders among 31-year olds? Return only the top product category.
+```
+SELECT DISTINCT Product_Category, 
+  SUM(Order_Quantity) as total_qty
+FROM prework.sales
+WHERE Customer_Age = 31
+group by 1
+ORDER BY 2 DESC 
+LIMIT 1;
+```
+
+
