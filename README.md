@@ -1,5 +1,4 @@
 # Sales Analysis using SQL in Big Query
-[Uploading sales.csv…]()
 
 #### 1: Earliest year of purchase
 ```
