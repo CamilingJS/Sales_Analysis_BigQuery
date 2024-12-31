@@ -87,5 +87,44 @@ LIMIT 1;
 ```
 ![image](https://github.com/user-attachments/assets/7c6dbdb2-22f2-4d4b-879c-ae8a43653e4a)
 
+#### 7: Of female customers in the U.S. who purchased bike-related products in 2015, what was the average revenue?
+```
+WITH revs_ AS (
+select Revenue from prework.sales
+WHERE Customer_Gender = 'F'
+AND Product_Category = 'Bikes'
+AND Country = 'United States'
+AND Year = 2015
+)
+select 'United States' AS Country, Avg(Revenue) as avg_us_female_bikes_rev
+from revs_;
+
+```
+![image](https://github.com/user-attachments/assets/50e95353-4004-4f02-a18c-c6c6b79a1b04)
+
+```
+select avg(revenue) as avg_revenue
+from prework.sales
+where customer_gender = 'F' 
+  and product_category like '%Bike%'
+	and country = 'United States' 
+  and year = 2015;
+```
+![image](https://github.com/user-attachments/assets/efd60550-4b16-4283-a487-b353e4ee9949)
+
+
+
+#### 8: Categorize all purchases into bike vs. non-bike related purchases. How many purchases were there in each group among male customers in 2016?
+```
+```
+
+#### 9: Among people who purchased socks or caps (use sub_category), what was the average profit earned per country per year, ordered by highest average profit to lowest average profit?
+```
+```
+
+#### 10: For male customers who purchased the AWC Logo Cap (use product), use a window function to order the purchase dates from oldest to most recent within each gender.
+```
+```
+
 
 
