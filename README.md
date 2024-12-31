@@ -11,6 +11,8 @@ LIMIT 1;
 SELECT MIN(Year) as earliest_year_
 FROM prework.sales; 
 ```
+![image](https://github.com/user-attachments/assets/8f600094-826a-4f61-b3c2-7bbaa21410d8)
+
 #### 2: Average customer age per year
 ```
 SELECT year,
@@ -27,6 +29,8 @@ FROM prework.sales
 group by 1
 order by 1;
 ```
+![image](https://github.com/user-attachments/assets/1bbbd5af-d5fc-4583-9844-cef36fee399e)
+
 
 #### 3: Clothing from September 2015, cost at least 70
 ```
@@ -37,6 +41,17 @@ WHERE YEAR = 2015
   and cost >= 70
 ORDER BY date;
 ```
+```
+SELECT Product, Cost, Month, Year
+FROM prework.sales
+WHERE YEAR = 2015
+  and month = "September"
+  and cost >= 70
+ORDER BY date
+LIMIT 16;
+```
+![image](https://github.com/user-attachments/assets/c911a7e5-a96f-4da4-86b7-c944b6cb5cfc)
+
 
 #### 4: Product categories from 2014 to 2016 in France
 ```
@@ -45,6 +60,8 @@ FROM prework.sales
 WHERE year BETWEEN 2014 AND 2016
   AND country = 'France';
 ```
+![image](https://github.com/user-attachments/assets/e6efd300-b9b8-483a-8404-c7b313eefe90)
+
 
 #### 5: Within each product category and age group (combined), what is the average order quantity and total profit?
 ```
@@ -55,6 +72,8 @@ SELECT DISTINCT Product_Category,
 FROM prework.sales
 group by 1,2;
 ```
+![image](https://github.com/user-attachments/assets/527c11d9-015b-4cdb-be8b-abcdd630421c)
+
 
 #### 6: Which product category has the highest number of orders among 31-year olds? Return only the top product category.
 ```
@@ -66,5 +85,7 @@ group by 1
 ORDER BY 2 DESC 
 LIMIT 1;
 ```
+![image](https://github.com/user-attachments/assets/7c6dbdb2-22f2-4d4b-879c-ae8a43653e4a)
+
 
 
