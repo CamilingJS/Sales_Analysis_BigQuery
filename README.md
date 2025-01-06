@@ -116,7 +116,16 @@ where customer_gender = 'F'
 
 #### 8: Categorize all purchases into bike vs. non-bike related purchases. How many purchases were there in each group among male customers in 2016?
 ```
+SELECT 
+  SUM(CASE WHEN Product_Category LIKE '%Bikes%' THEN 1 ELSE 0 END) AS isBike,
+  SUM(CASE WHEN Product_Category NOT LIKE '%Bikes%' THEN 1 ELSE 0 END) AS isNonBike,
+  COUNT(*) AS total
+FROM `elegant-matrix-315405.prework.sales`
+WHERE Customer_Gender = 'M';
+
 ```
+<img width="332" alt="image" src="https://github.com/user-attachments/assets/6cb6bf71-6202-4862-9d86-1d625209a92b" />
+
 
 #### 9: Among people who purchased socks or caps (use sub_category), what was the average profit earned per country per year, ordered by highest average profit to lowest average profit?
 ```
