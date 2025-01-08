@@ -129,7 +129,27 @@ WHERE Customer_Gender = 'M';
 
 #### 9: Among people who purchased socks or caps (use sub_category), what was the average profit earned per country per year, ordered by highest average profit to lowest average profit?
 ```
+select Country, Year, round(avg(Profit), 2) as avg_profit_
+from prework.sales
+where Sub_Category like '%Sock%' or Sub_Category like '%Cap%'
+group by Country, Year
+order by avg_profit_ desc; 
 ```
+![image](https://github.com/user-attachments/assets/56b10251-b6c6-4d01-94f9-17147a08ea34)
+
+```
+select country
+year,
+avg(profit) as avg_profit
+from prework.sales
+where sub_category in ('Caps', 'Socks')
+group by 1,2
+order by 3 desc;
+```
+<img width="260" alt="image" src="https://github.com/user-attachments/assets/cc991880-8e42-4160-89af-ce2956fe3e8c" />
+
+
+
 
 #### 10: For male customers who purchased the AWC Logo Cap (use product), use a window function to order the purchase dates from oldest to most recent within each gender.
 ```
