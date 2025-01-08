@@ -153,7 +153,12 @@ order by 3 desc;
 
 #### 10: For male customers who purchased the AWC Logo Cap (use product), use a window function to order the purchase dates from oldest to most recent within each gender.
 ```
+select *
+row_number() over (partition by Customer_Gender order by date asc) as date_rank
+from prework.sales
+where Customer_Gender = 'M' and Product = 'AWC Logo Cap'; 
 ```
+<img width="751" alt="image" src="https://github.com/user-attachments/assets/48b81764-a056-4f35-9ec6-30fc784ddb5c" />
 
 
 
