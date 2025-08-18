@@ -176,6 +176,51 @@ WHERE fdu.usage_date BETWEEN '2024-07-01' AND '2024-09-30'
 GROUP BY 1
 ```
 
+#### The team is considering bundling the Prime Video and Amazon Music subscription. They want to understand what percentage of total usage time comes from Prime Video and Amazon Music services respectively. Please use data from July 1, 2024 to September 30, 2024.
+#### Tables
+#### fct_device_usage(usage_id, device_id, service_id, usage_duration_minutes, usage_date)
+#### dim_device(device_id, device_name)
+#### dim_service(service_id, service_name)
+```
+WITH totals_prime_and_amazon AS (
+    SELECT
+        SUM(fdu.usage_duration_minutes) AS total_prime_and_amazon_usage_min
+    FROM fct_device_usage fdu 
+    JOIN dim_service ds
+    ON fdu.service_id = ds.service_id
+    WHERE fdu.usage_date BETWEEN '2024-07-01' AND '2024-09-30'
+    AND (ds.service_name = 'Prime Video' OR ds.service_name = 'Amazon Music')
+),
+totals AS (
+    SELECT
+        SUM(usage_duration_minutes) AS total_usage_min
+    FROM fct_device_usage 
+    WHERE usage_date BETWEEN '2024-07-01' AND '2024-09-30'
+)
+
+SELECT 
+    (total_prime_and_amazon_usage_min::NUMERIC / total_usage_min::NUMERIC) * 100 AS percentage_usage
+FROM totals_prime_and_amazon, totals;
+```
+####
+```
+SELECT
+    s.service_name,
+    SUM(u.usage_duration_minutes) AS total_usage_minutes,
+    ROUND(
+        100.0 * SUM(u.usage_duration_minutes) 
+        / SUM(SUM(u.usage_duration_minutes)) OVER (),
+        2
+    ) AS pct_of_total_usage
+FROM fct_device_usage u
+JOIN dim_service s 
+    ON u.service_id = s.service_id
+WHERE u.usage_date BETWEEN '2024-07-01' AND '2024-09-30'
+  AND s.service_name IN ('Prime Video', 'Amazon Music')
+GROUP BY s.service_name
+ORDER BY s.service_name;
+```
+
 
 
 
