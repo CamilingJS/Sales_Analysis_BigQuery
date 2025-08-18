@@ -160,5 +160,22 @@ where Customer_Gender = 'M' and Product = 'AWC Logo Cap';
 ```
 <img width="751" alt="image" src="https://github.com/user-attachments/assets/48b81764-a056-4f35-9ec6-30fc784ddb5c" />
 
+#### 11: The team wants to identify the total usage duration of the services for each device type by extracting the primary device category from the device name for the period from July 1, 2024 to September 30, 2024. The primary device category is derived from the first word of the device name.
+#### Tables
+#### fct_device_usage(usage_id, device_id, service_id, usage_duration_minutes, usage_date)
+#### dim_device(device_id, device_name)
+#### dim_service(service_id, service_name)
+```
+SELECT
+SUBSTRING(dd.device_name FROM 1 FOR POSITION(' ' IN dd.device_name) - 1),
+SUM(fdu.usage_duration_minutes) AS total_usage_minutes
+FROM dim_device dd
+JOIN fct_device_usage fdu
+ON dd.device_id = fdu.device_id 
+WHERE fdu.usage_date BETWEEN '2024-07-01' AND '2024-09-30'
+GROUP BY 1
+```
+
+
 
 
