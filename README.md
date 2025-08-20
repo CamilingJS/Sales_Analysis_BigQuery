@@ -222,5 +222,23 @@ ORDER BY s.service_name;
 ```
 
 
+#### To better understand customer preferences, the team needs to know the details of customers who reorder specific products. Can you retrieve the customer information along with their reordered product code(s) for Q4 2024?
+#### Tables
+#### fct_orders(order_id, customer_id, product_id, reorder_flag, order_date)
+#### dim_products(product_id, product_code, category)
+#### dim_customers(customer_id, customer_name)
+```
+SELECT
+  dc.customer_id,
+  dp.product_code
+FROM
+  dim_products dp
+  INNER JOIN fct_orders fo ON dp.product_id = fo.product_id
+  INNER JOIN dim_customers dc ON fo.customer_id = dc.customer_id
+WHERE
+  fo.order_date BETWEEN '2024-10-01' AND '2024-12-31'
+  AND fo.reorder_flag = 1
+```
+
 
 
