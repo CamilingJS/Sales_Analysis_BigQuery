@@ -240,5 +240,21 @@ WHERE
   AND fo.reorder_flag = 1
 ```
 
+#### When calculating the average reorder frequency, it's important to handle cases where reorder counts may be missing or zero. Can you compute the average reorder frequency across the product categories, ensuring that any missing or null values are appropriately managed for Q4 2024?
+#### Tables
+#### fct_orders(order_id, customer_id, product_id, reorder_flag, order_date)
+#### dim_products(product_id, product_code, category)
+#### dim_customers(customer_id, customer_name)
+```
+SELECT 
+    dp.category,
+    AVG(COALESCE(fo.reorder_flag, 0)) AS avg_reorder_frequency
+FROM dim_products dp
+LEFT JOIN fct_orders fo
+    ON dp.product_id = fo.product_id
+   AND fo.order_date BETWEEN '2024-10-01' AND '2024-12-31'
+GROUP BY dp.category
+ORDER BY avg_reorder_frequency DESC;
+```
 
 
