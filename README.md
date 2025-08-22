@@ -257,4 +257,32 @@ GROUP BY dp.category
 ORDER BY avg_reorder_frequency DESC;
 ```
 
+#### As a Product Analyst on the Mac software team, you are investigating exceptional daily usage patterns in September 2024. For each day, determine the distinct user count and the total hours spent using multimedia tools. Which days have both metrics above the respective average daily values for September 2024?
+#### Tables
+#### fct_multimedia_usage(user_id, usage_date, hours_spent)
+```
+WITH user_count_total_hour_per_day AS (
+SELECT
+usage_date,
+COUNT(DISTINCT user_id) AS user_count,
+sum(hours_spent) AS total_hours
+FROM fct_multimedia_usage
+WHERE usage_date BETWEEN '2024-09-01' AND '2024-09-30'
+GROUP BY 1
+),
+averages_table AS (
+  SELECT
+  round(AVG(user_count), 2) AS avg_user_count,
+  round(AVG(total_hours), 2) AS avg_total_hours
+  FROM user_count_total_hour_per_day
+)
+
+SELECT ucthpd.usage_date
+FROM user_count_total_hour_per_day ucthpd
+CROSS JOIN averages_table avgtab
+WHERE ucthpd.user_count > avgtab.avg_user_count 
+AND ucthpd.total_hours > avgtab.avg_total_hours
+```
+
+
 
