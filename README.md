@@ -284,5 +284,20 @@ WHERE ucthpd.user_count > avgtab.avg_user_count
 AND ucthpd.total_hours > avgtab.avg_total_hours
 ```
 
+#### What is the total number of photos shared by users who are either under 18 years old or over 50 years old and who are not from the United States during the third quarter of 2024? This measure will inform us if there are significant differences in usage across these age and geographic segments.
+#### Tables
+#### fct_photo_sharing(photo_id, user_id, shared_date)
+#### dim_user(user_id, age, country)
+```
+SELECT
+count(fps.photo_id)
+FROM fct_photo_sharing fps
+INNER JOIN dim_user du 
+ON fps.user_id = du.user_id 
+WHERE fps.shared_date BETWEEN '2024-07-01' AND '2024-09-30'
+AND du.country != 'United States'
+AND (du.age < 18 OR du.age > 50)
+```
+
 
 
