@@ -303,36 +303,6 @@ AND (du.age < 18 OR du.age > 50)
 #### Tables
 #### fct_transactions(transaction_id, merchant_category, transaction_status, transaction_date)
 ```
- WITH success_count AS (
-   SELECT 
-   merchant_category,
-   COUNT(transaction_id) AS success_total
-   FROM fct_transactions
-   WHERE transaction_date BETWEEN '2024-01-01' AND '2024-03-31'
-   AND transaction_status  = 'SUCCESS'
-   GROUP BY 1
- ),
-count_all AS (
-   SELECT 
-   merchant_category,
-   COUNT(transaction_id) AS count_total
-   FROM fct_transactions
-   WHERE transaction_date BETWEEN '2024-01-01' AND '2024-03-31'
-   GROUP BY 1
-)
-
-SELECT 
-  ca.merchant_category,
-  COALESCE(sc.success_total, 0) * 1.0 / ca.count_total * 100 AS success_rate
-FROM count_all ca
-LEFT JOIN success_count sc 
-ON ca.merchant_category = sc.merchant_category
-GROUP BY ca.merchant_category, ca.count_total
-HAVING (COALESCE(sc.success_total, 0) * 1.0 / ca.count_total * 100) < 90
-ORDER BY success_rate DESC
-```
-
-```
 SELECT 
     merchant_category,
     COUNT(*) AS total_txn,
@@ -344,6 +314,30 @@ WHERE transaction_date >= '2024-01-01'
 GROUP BY merchant_category
 HAVING (SUM(CASE WHEN transaction_status = 'Success' THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) < 90
 ORDER BY success_rate ASC;
+```
+
+#### From January 1st to March 31st, 2024, can you generate a list of merchant categories with their concatenated counts for successful and failed transactions? Then, rank the categories by total transaction volume. This ranking will support our assessment of areas where mixed transaction outcomes may affect user experience.
+#### Tables
+#### fct_transactions(transaction_id, merchant_category, transaction_status, transaction_date)
+```
+WITH txn_summary AS (
+  SELECT
+    merchant_category,
+    COUNT(*) FILTER (WHERE transaction_status = 'Success') AS success_count,
+    COUNT(*) FILTER (WHERE transaction_status = 'Failed') AS failed_count,
+    COUNT(*) AS total_count
+  FROM fct_transactions
+  WHERE transaction_date BETWEEN '2024-01-01' AND '2024-03-31'
+  GROUP BY merchant_category
+)
+  
+SELECT
+  merchant_category,
+  success_count || ' Success / ' || failed_count || ' Failed' AS transaction_summary,
+  total_count,
+  RANK() OVER (ORDER BY total_count DESC) AS category_rank
+FROM txn_summary
+ORDER BY category_rank; 
 ```
 
 
