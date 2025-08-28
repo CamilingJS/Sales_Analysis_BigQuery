@@ -332,5 +332,19 @@ HAVING (COALESCE(sc.success_total, 0) * 1.0 / ca.count_total * 100) < 90
 ORDER BY success_rate DESC
 ```
 
+```
+SELECT 
+    merchant_category,
+    COUNT(*) AS total_txn,
+    SUM(CASE WHEN transaction_status = 'Success' THEN 1 ELSE 0 END) AS successful_txn,
+    ROUND(100.0 * SUM(CASE WHEN transaction_status = 'Success' THEN 1 ELSE 0 END) / COUNT(*), 2) AS success_rate
+FROM fct_transactions
+WHERE transaction_date >= '2024-01-01'
+  AND transaction_date < '2024-04-01'
+GROUP BY merchant_category
+HAVING (SUM(CASE WHEN transaction_status = 'Success' THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) < 90
+ORDER BY success_rate ASC;
+```
+
 
 
