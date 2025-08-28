@@ -299,5 +299,38 @@ AND du.country != 'United States'
 AND (du.age < 18 OR du.age > 50)
 ```
 
+#### For the first quarter of 2024, which merchant categories recorded a transaction success rate below 90%? This insight will guide our prioritization of security enhancements to improve payment reliability.
+#### Tables
+#### fct_transactions(transaction_id, merchant_category, transaction_status, transaction_date)
+```
+ WITH success_count AS (
+   SELECT 
+   merchant_category,
+   COUNT(transaction_id) AS success_total
+   FROM fct_transactions
+   WHERE transaction_date BETWEEN '2024-01-01' AND '2024-03-31'
+   AND transaction_status  = 'SUCCESS'
+   GROUP BY 1
+ ),
+count_all AS (
+   SELECT 
+   merchant_category,
+   COUNT(transaction_id) AS count_total
+   FROM fct_transactions
+   WHERE transaction_date BETWEEN '2024-01-01' AND '2024-03-31'
+   GROUP BY 1
+)
+
+SELECT 
+  ca.merchant_category,
+  COALESCE(sc.success_total, 0) * 1.0 / ca.count_total * 100 AS success_rate
+FROM count_all ca
+LEFT JOIN success_count sc 
+ON ca.merchant_category = sc.merchant_category
+GROUP BY ca.merchant_category, ca.count_total
+HAVING (COALESCE(sc.success_total, 0) * 1.0 / ca.count_total * 100) < 90
+ORDER BY success_rate DESC
+```
+
 
 
