@@ -340,5 +340,18 @@ FROM txn_summary
 ORDER BY category_rank; 
 ```
 
+#### How many files were shared with names that start with the same prefix as the organization name, concatenated with a hyphen, in February 2024?
+#### Tables
+#### fct_file_sharing(file_id, file_name, organization_id, shared_date, co_editing_user_id)
+#### dim_organization(organization_id, organization_name, segment)
+```
+SELECT
+count(*) AS file_count
+FROM fct_file_sharing ffs JOIN dim_organization dimo 
+ON ffs.organization_id = dimo.organization_id
+WHERE ffs.shared_date BETWEEN '2024-02-01' AND '2024-02-29'
+AND ffs.file_name LIKE dimo.organization_name || '-%'
+```
+
 
 
