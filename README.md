@@ -353,5 +353,22 @@ WHERE ffs.shared_date BETWEEN '2024-02-01' AND '2024-02-29'
 AND ffs.file_name LIKE dimo.organization_name || '-%'
 ```
 
+#### Identify the top 3 organizational segments with the highest number of files shared where the co-editing user is NULL, indicating a potential security risk, during the first quarter of 2024.
+#### Tables
+#### fct_file_sharing(file_id, file_name, organization_id, shared_date, co_editing_user_id)
+#### dim_organization(organization_id, organization_name, segment)
+```
+SELECT
+segment,
+COUNT(file_id) AS file_count
+FROM fct_file_sharing ffs JOIN dim_organization dimo 
+ON ffs.organization_id = dimo.organization_id
+WHERE ffs.shared_date BETWEEN '2024-01-01' AND '2024-03-31'
+AND ffs.co_editing_user_id IS NULL
+GROUP BY 1
+ORDER BY 2 DESC 
+LIMIT 3
+```
+
 
 
