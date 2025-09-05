@@ -370,5 +370,29 @@ ORDER BY 2 DESC
 LIMIT 3
 ```
 
+#### Based on the top 50% of listings by earnings in July 2024, what percentage of these listings have ‘ocean view’ as an amenity? For this analysis, look at bookings that were made in July 2024.
+#### Tables
+#### fct_bookings(booking_id, listing_id, booking_date, nightly_price, cleaning_fee, booked_nights)
+#### dim_listings(listing_id, amenities, location)
+```
+WITH earnings AS (
+  SELECT
+    b.listing_id,
+    SUM( (b.nightly_price * b.booked_nights) + COALESCE(b.cleaning_fee, 0) ) AS total_earnings
+  FROM fct_bookings b 
+  WHERE b.booking_date BETWEEN '2024-07-01' AND '2024-07-31'
+  GROUP BY b.listing_id
+),
+top_earnings AS (
+  SELECT listing_id 
+  FROM earnings 
+  WHERE total_earnings > (SELECT percentile_cont(0.5) WITHIN GROUP (ORDER BY total_earnings) FROM earnings)
+)
+SELECT 
+  (SUM(CASE WHEN l.amenities LIKE '%ocean view%' THEN 1 ELSE 0 END) * 100.0 / COUNT(*)) AS ocean_view_percentage
+FROM dim_listings l
+JOIN top_earnings te ON l.listing_id = te.listing_id; 
+```
+
 
 
