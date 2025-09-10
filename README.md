@@ -394,5 +394,17 @@ FROM dim_listings l
 JOIN top_earnings te ON l.listing_id = te.listing_id; 
 ```
 
-
-
+#### What is the average checkout wait time in minutes for each Walmart store during July 2024? Include the store name from the dim_stores table to identify location-specific impacts. This metric will help determine which stores have longer customer wait times.
+#### Tables
+#### fct_checkout_times(store_id, transaction_id, checkout_start_time, checkout_end_time)
+#### dim_stores(store_id, store_name, location)
+```
+SELECT
+ds.store_name,
+avg(EXTRACT(EPOCH FROM (fct.checkout_end_time - fct.checkout_start_time)) / 60) AS avg_minutes
+FROM fct_checkout_times fct JOIN dim_stores ds
+ON fct.store_id = ds.store_id
+WHERE EXTRACT(YEAR FROM fct.checkout_end_time) = 2024
+AND EXTRACT(MONTH FROM fct.checkout_end_time) = 7
+GROUP BY ds.store_name
+```
