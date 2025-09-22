@@ -408,3 +408,34 @@ WHERE EXTRACT(YEAR FROM fct.checkout_end_time) = 2024
 AND EXTRACT(MONTH FROM fct.checkout_end_time) = 7
 GROUP BY ds.store_name
 ```
+
+#### For the stores with an average checkout wait time exceeding 10 minutes in July 2024, what are the average checkout wait times in minutes broken down by each hour of the day? Use the store information from dim_stores to ensure proper identification of each store. This detail will help pinpoint specific hours when wait times are particularly long.
+#### Tables
+#### fct_checkout_times(store_id, transaction_id, checkout_start_time, checkout_end_time)
+#### dim_stores(store_id, store_name, location)
+```
+WITH avg_min_per_store AS (
+  SELECT
+    fct.store_id,
+    AVG(EXTRACT(EPOCH FROM (fct.checkout_end_time - fct.checkout_start_time)) / 60) AS avg_minutes
+  FROM fct_checkout_times fct
+  WHERE fct.checkout_end_time >= '2024-07-01'
+    AND fct.checkout_end_time < '2024-08-01'
+  GROUP BY fct.store_id
+  HAVING AVG(EXTRACT(EPOCH FROM (fct.checkout_end_time - fct.checkout_start_time)) / 60) > 10
+)
+
+SELECT
+  ds.store_name,
+  ds.location,
+  EXTRACT(HOUR FROM fct.checkout_start_time) AS checkout_hour, 
+  AVG(EXTRACT(EPOCH FROM (fct.checkout_end_time - fct.checkout_start_time)) / 60) AS avg_wait_time_minutes
+FROM fct_checkout_times fct
+JOIN avg_min_per_store amps ON fct.store_id = amps.store_id
+JOIN dim_stores ds ON fct.store_id = ds.store_id
+WHERE fct.checkout_end_time >= '2024-07-01'
+  AND fct.checkout_end_time < '2024-08-01'
+GROUP BY ds.store_name, ds.location, EXTRACT(HOUR FROM fct.checkout_start_time)
+ORDER BY ds.store_name, checkout_hour;
+
+```
