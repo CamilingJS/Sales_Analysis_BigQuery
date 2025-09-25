@@ -439,3 +439,51 @@ GROUP BY ds.store_name, ds.location, EXTRACT(HOUR FROM fct.checkout_start_time)
 ORDER BY ds.store_name, checkout_hour;
 
 ```
+
+#### Identify the seller segment with the highest payout success rate in July 2024 by comparing successful and failed payouts.
+#### Tables
+#### fct_payouts(payout_id, seller_id, payout_status, payout_date)
+#### dim_sellers(seller_id, seller_segment)
+```
+WITH payout_summary as (
+SELECT
+  ds.seller_segment,
+  COUNT(*) FILTER (WHERE fp.payout_status = 'successful') AS num_successful,
+  COUNT(*) AS total_payouts
+FROM fct_payouts fp 
+JOIN dim_sellers ds ON fp.seller_id = ds.seller_id
+WHERE fp.payout_date BETWEEN '2024-07-01' AND '2024-07-31'
+GROUP BY 1
+)
+
+SELECT 
+ seller_segment,
+ ROUND(num_successful::numeric / total_payouts * 100, 0) AS success_ratio
+FROM payout_summary
+ORDER BY 2 DESC
+```
+
+#### What percentage of payouts were successful versus failed for each seller segment in July 2024, and how can this be used to recommend targeted improvements?
+#### Tables
+#### fct_payouts(payout_id, seller_id, payout_status, payout_date)
+#### dim_sellers(seller_id, seller_segment)
+```
+WITH payout_summary as (
+SELECT
+  ds.seller_segment,
+  COUNT(*) FILTER (WHERE fp.payout_status = 'successful') AS num_successful,
+  COUNT(*) FILTER (WHERE fp.payout_status = 'failed') AS num_failed, 
+  COUNT(*) AS total_payouts
+FROM fct_payouts fp 
+JOIN dim_sellers ds ON fp.seller_id = ds.seller_id
+WHERE fp.payout_date BETWEEN '2024-07-01' AND '2024-07-31'
+GROUP BY 1
+)
+
+SELECT 
+ seller_segment,
+ ROUND(num_successful::numeric / total_payouts * 100, 0) AS success_ratio,
+ ROUND(num_failed::numeric / total_payouts * 100, 0) AS failed_ratio
+FROM payout_summary
+ORDER BY 2 DESC
+```
