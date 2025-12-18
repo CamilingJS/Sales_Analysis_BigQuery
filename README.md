@@ -567,3 +567,14 @@ FROM ranked_users
 WHERE activity_rank = 1
 ORDER BY message_date, user_name; 
 ```
+
+#### The Grinch is tracking his daily mischief scores to see how his behavior changes over time. Can you find how many points his score increased or decreased each day compared to the previous day?
+#### Tables: grinch_mischief_log(log_date, mischief_score)
+```
+SELECT
+  log_date,
+  mischief_score,
+  mischief_score - LAG(mischief_score) OVER (ORDER BY log_date) AS DAILY_CHANGE
+FROM grinch_mischief_log
+ORDER BY log_date
+```
