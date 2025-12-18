@@ -528,3 +528,42 @@ SELECT
   NTILE(4) OVER (ORDER BY total_annual_snowfall DESC) AS snowfall_quartile
 FROM annual_snowfall
 ```
+
+#### The North Pole Network wants to see who's the most active in the holiday chat each day. Write a query to count how many messages each user sent, then find the most active user(s) each day. If multiple users tie for first place, return all of them.
+#### Tables
+#### npn_users(user_id, user_name)
+#### npn_messages(message_id, sender_id, sent_at)
+```
+WITH daily_message_counts AS (
+  SELECT 
+    DATE(m.sent_at) AS message_date,
+    u.user_id,
+    u.user_name,
+    COUNT(*) AS message_count
+  FROM npn_messages m  
+  JOIN npn_users u  
+    ON m.sender_id = u.user_id 
+  GROUP BY DATE(m.sent_at), u.user_id
+),
+ranked_users AS (
+  SELECT
+    message_date,
+    user_id,
+    user_name,
+    message_count,
+    RANK() OVER (
+      PARTITION BY message_date
+      ORDER BY message_count DESC
+    ) AS activity_rank 
+  FROM daily_message_counts
+)
+
+SELECT 
+  message_date,
+  user_id,
+  user_name,
+  message_count
+FROM ranked_users
+WHERE activity_rank = 1
+ORDER BY message_date, user_name; 
+```
